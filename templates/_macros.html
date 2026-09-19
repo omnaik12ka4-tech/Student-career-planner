@@ -1,0 +1,34 @@
+{# Reusable building blocks: a circular progress ring and a career card #}
+
+{% macro ring(score, size=64) -%}
+<svg class="ring" width="{{ size }}" height="{{ size }}" viewBox="0 0 44 44" role="img" aria-label="{{ score }} percent match">
+    <circle class="ring-bg" cx="22" cy="22" r="18"/>
+    <circle class="ring-fg{{ ' zero' if score == 0 }}" cx="22" cy="22" r="18" pathLength="100" style="--pct:{{ score }}"/>
+    <text class="ring-text" x="22" y="22" text-anchor="middle" dominant-baseline="central">{{ score }}%</text>
+</svg>
+{%- endmacro %}
+
+{% macro career_card(c, detailed=False) -%}
+<article class="card career-card reveal" style="--hue:{{ c.hue }}" data-name="{{ c.name|lower }}" data-score="{{ c.score }}">
+    <div class="cc-top">
+        <span class="career-icon">{{ c.icon }}</span>
+        <div class="cc-title">
+            <h3>{{ c.name }}</h3>
+            <span class="pill lvl-{{ c.level_index }}">{{ c.level }}</span>
+        </div>
+        {{ ring(c.score, 60) }}
+    </div>
+    <p class="muted cc-desc">{{ c.description }}</p>
+    {% if detailed %}
+    <div class="chips">
+        {% for s in c.skills %}
+        <span class="chip {{ 'have' if s in c.matched else 'need' }}">{{ '✓' if s in c.matched else '+' }} {{ s }}</span>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="progress"><div style="width:{{ c.score }}%"></div></div>
+    <p class="small"><b>{{ c.matched|length }}</b> of {{ c.total }} skills matched</p>
+    {% endif %}
+    <a class="text-btn" href="{{ url_for('career_detail', slug=c.slug) }}">View roadmap →</a>
+</article>
+{%- endmacro %}

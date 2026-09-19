@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Plan your career{% endblock %}
+{% block content %}
+{% set demo = [("Data Analyst", "📊", 83), ("Python Developer", "🐍", 67), ("Web Developer", "🌐", 50)] %}
+
+<section class="hero">
+    <div class="hero-copy">
+        <span class="badge">✨ TY BSc CS Mini Project</span>
+        <h1>Plan your career.<br><span class="grad-text">Build the right skills.</span></h1>
+        <p class="lead">Tick the skills you already have. Get instant career matches, see exactly what's missing, and follow a step-by-step roadmap to get there.</p>
+        <div class="actions">
+            <a class="btn btn-lg" href="{{ url_for('register') }}">Get started — it's free</a>
+            <a class="btn secondary btn-lg" href="{{ url_for('login') }}">I have an account</a>
+        </div>
+        <ul class="trust">
+            <li><strong>{{ career_count }}</strong> career paths</li>
+            <li><strong>{{ skill_count }}</strong> skills tracked</li>
+            <li><strong>Live</strong> skill-gap analysis</li>
+        </ul>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+        <div class="mock-card">
+            <div class="mock-head"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><small>Your career matches</small></div>
+            {% for name, icon, score in demo %}
+            <div class="mock-row">
+                <span class="mock-icon">{{ icon }}</span>
+                <div class="mock-info">
+                    <strong>{{ name }}</strong>
+                    <div class="progress"><div style="width:{{ score }}%"></div></div>
+                </div>
+                <span class="score">{{ score }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+        <span class="float-chip c1">✓ Python</span>
+        <span class="float-chip c2">✓ SQL</span>
+        <span class="float-chip c3 gap">+ Learn Docker</span>
+    </div>
+</section>
+
+<section class="steps-section">
+    <div class="section-title center-title">
+        <span class="badge">How it works</span>
+        <h2>From “where do I start?” to a clear plan</h2>
+    </div>
+    <div class="grid three">
+        <div class="card step-card reveal"><span class="step-num">1</span><h3>Pick your skills</h3><p class="muted">Tick what you already know — from Python and SQL to Linux and Git. Search and group tools make it quick.</p></div>
+        <div class="card step-card reveal"><span class="step-num">2</span><h3>See your matches</h3><p class="muted">Every career gets a match score, a readiness level and a radar chart so you see your strengths at a glance.</p></div>
+        <div class="card step-card reveal"><span class="step-num">3</span><h3>Follow the roadmap</h3><p class="muted">Get the exact skills you're missing, what to learn first, and a starter project to prove it.</p></div>
+    </div>
+</section>
+
+<section>
+    <div class="section-title center-title">
+        <span class="badge">Features</span>
+        <h2>Everything you need to plan ahead</h2>
+    </div>
+    <div class="grid three">
+        <div class="card feature reveal"><div class="icon">🎯</div><h3>Skill-match score</h3><p class="muted">A simple, transparent formula: matched skills ÷ required skills.</p></div>
+        <div class="card feature reveal"><div class="icon">🧩</div><h3>Skill-gap analysis</h3><p class="muted">Green chips for what you have, dashed chips for what to learn.</p></div>
+        <div class="card feature reveal"><div class="icon">💡</div><h3>“Learn next” suggestions</h3><p class="muted">We pick the skill that helps the most careers you're close to.</p></div>
+        <div class="card feature reveal"><div class="icon">🕸️</div><h3>Radar overview</h3><p class="muted">One chart that shows how you fit every career together.</p></div>
+        <div class="card feature reveal"><div class="icon">🗺️</div><h3>Roadmaps &amp; projects</h3><p class="muted">Step-by-step path with a tutorial link and a starter project idea.</p></div>
+        <div class="card feature reveal"><div class="icon">🌙</div><h3>Dark mode &amp; print</h3><p class="muted">Works on phones, looks great at night, and prints your plan cleanly.</p></div>
+    </div>
+</section>
+
+<section class="cta-band reveal">
+    <div>
+        <h2>Ready to see where you stand?</h2>
+        <p>Create a free account and get your first career matches in under a minute.</p>
+    </div>
+    <a class="btn btn-lg light" href="{{ url_for('register') }}">Create my plan →</a>
+</section>
+{% endblock %}

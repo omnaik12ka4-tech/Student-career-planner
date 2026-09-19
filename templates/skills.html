@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}My Skills{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="badge">Skills</span>
+        <h1>Choose your current skills</h1>
+        <p class="muted">Tick everything you already know or are comfortable using. Your matches update live on the right.</p>
+    </div>
+</div>
+
+<form method="POST" id="skillsForm">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="skills-layout">
+        <div class="skills-main">
+            <div class="toolbar">
+                <div class="search"><span aria-hidden="true">🔍</span><input id="skillSearch" type="search" placeholder="Search skills (e.g. Python)…" aria-label="Search skills"></div>
+                <button type="button" class="btn secondary small" id="clearAll">Clear all</button>
+            </div>
+
+            {% for group in groups %}
+            <section class="skill-group" data-group>
+                <div class="group-head">
+                    <h2><span aria-hidden="true">{{ group.icon }}</span> {{ group.name }}</h2>
+                    <span class="group-count" data-group-count>0/{{ group.skills|length }}</span>
+                    <button type="button" class="link-btn" data-toggle-group>Select all</button>
+                </div>
+                <div class="skill-grid">
+                    {% for skill in group.skills %}
+                    <label class="skill-option" data-skill="{{ skill|lower }}">
+                        <input type="checkbox" name="skills" value="{{ skill }}" {% if skill in selected %}checked{% endif %}>
+                        <span class="tick">✓</span>
+                        <span>{{ skill }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+            <p class="muted center" id="noSkills" hidden>No skills match your search.</p>
+        </div>
+
+        <aside class="skills-side card">
+            <h3>Live preview</h3>
+            <p class="muted small"><b id="selCount">0</b> skills selected · your top matches:</p>
+            <div id="previewList" class="preview-list"></div>
+            <button class="btn full" type="submit">Save skills</button>
+        </aside>
+    </div>
+</form>
+
+<script id="careerData" type="application/json">{{ careers_json|tojson }}</script>
+{% endblock %}

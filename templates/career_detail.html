@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_macros.html" import ring %}
+{% block title %}{{ career.name }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('careers') }}">← Back to careers</a>
+
+<section class="card detail-header" style="--hue:{{ career.hue }}">
+    <div class="dh-main">
+        <span class="career-icon lg">{{ career.icon }}</span>
+        <div>
+            <span class="badge">Career roadmap</span>
+            <h1>{{ career.name }}</h1>
+            <p class="muted">{{ career.description }}</p>
+            <div class="tm-meta">
+                <span class="pill lvl-{{ career.level_index }}">{{ career.level }}</span>
+                <span><b>{{ career.matched|length }}</b> of {{ career.total }} skills matched</span>
+            </div>
+        </div>
+    </div>
+    <div class="dh-ring">{{ ring(career.score, 130) }}</div>
+</section>
+
+<div class="detail-layout">
+    <section class="card">
+        <div class="card-top">
+            <h2>Your roadmap</h2>
+            <button type="button" class="btn small secondary no-print" onclick="window.print()">🖨️ Print / save PDF</button>
+        </div>
+        <p class="muted">Green steps are done. Start with the highlighted one — each “Learn” button opens beginner tutorials.</p>
+
+        <ol class="roadmap">
+            {% for step in steps %}
+            <li class="step {{ step.state }}">
+                <div class="road-dot">{{ '✓' if step.state == 'done' else loop.index }}</div>
+                <div class="step-body">
+                    <strong>{{ step.skill }}</strong>
+                    {% if step.state == 'done' %}<p>Skill matched — nice work.</p>
+                    {% elif step.state == 'current' %}<p>Start here — this is your next best step.</p>
+                    {% else %}<p>Skill gap — worth learning next.</p>{% endif %}
+                </div>
+                {% if step.state != 'done' %}
+                <a class="btn small {{ '' if step.state == 'current' else 'secondary' }} no-print" href="{{ learn_url(step.skill) }}" target="_blank" rel="noopener">Learn ↗</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+            <li class="step final">
+                <div class="road-dot">🏁</div>
+                <div class="step-body"><strong>Build a project &amp; apply for internships</strong><p>Show your skills in practice — then put them on your resume and GitHub.</p></div>
+            </li>
+        </ol>
+    </section>
+
+    <aside>
+        <section class="card project-card" style="--hue:{{ career.hue }}">
+            <h3>💡 Starter project</h3>
+            <p>{{ career.project }}</p>
+        </section>
+
+        <section class="card no-print">
+            <h3>Related careers</h3>
+            <p class="muted small">These share the most skills with {{ career.short }}.</p>
+            <ul class="related-list">
+                {% for r in related %}
+                <li>
+                    <a href="{{ url_for('career_detail', slug=r.slug) }}">
+                        <span class="career-icon sm" style="--hue:{{ r.hue }}">{{ r.icon }}</span>
+                        <span><strong>{{ r.name }}</strong><small class="muted">Shares {{ r.shared|join(', ') }}</small></span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+</div>
+{% endblock %}

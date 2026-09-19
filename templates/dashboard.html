@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% from "_macros.html" import ring, career_card %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="badge">Dashboard</span>
+        <h1>{{ greeting }}, {{ g.user['name'].split()[0] }} 👋</h1>
+        <p class="muted">Here is your current career planning overview.</p>
+    </div>
+    <a class="btn" href="{{ url_for('skills') }}">✏️ Update skills</a>
+</div>
+
+{% if not skills %}
+{# ---------- Empty state: first-time users ---------- #}
+<section class="card empty-state reveal">
+    <div class="empty-emoji">🌱</div>
+    <h2>Let's find your best career match</h2>
+    <p class="muted">You haven't added any skills yet. Pick a few and this page comes alive with matches, a radar chart and a personal roadmap.</p>
+    <a class="btn btn-lg" href="{{ url_for('skills') }}">Add my skills</a>
+</section>
+{% else %}
+
+{# ---------- Top match ---------- #}
+<section class="card top-match reveal" style="--hue:{{ top.hue }}">
+    <div class="tm-body">
+        <span class="badge">🏆 Your best match right now</span>
+        <h2><span class="career-icon">{{ top.icon }}</span> {{ top.name }}</h2>
+        <p class="muted">{{ top.description }}</p>
+        <div class="tm-meta">
+            <span class="pill lvl-{{ top.level_index }}">{{ top.level }}</span>
+            <span><b>{{ top.matched|length }}</b> of {{ top.total }} skills matched{% if top.missing %} · <b>{{ top.missing|length }}</b> to go{% endif %}</span>
+        </div>
+        <a class="btn" href="{{ url_for('career_detail', slug=top.slug) }}">Open roadmap →</a>
+    </div>
+    <div class="tm-ring">{{ ring(top.score, 150) }}</div>
+</section>
+
+{# ---------- Stats ---------- #}
+<div class="stats">
+    <div class="stat reveal"><span class="stat-icon">🧠</span><strong data-count="{{ skills|length }}">{{ skills|length }}</strong><span>Skills added</span></div>
+    <div class="stat reveal"><span class="stat-icon">🎯</span><strong data-count="{{ top.score }}" data-suffix="%">{{ top.score }}%</strong><span>Top career match</span></div>
+    <div class="stat reveal"><span class="stat-icon">💪</span><strong data-count="{{ strong_count }}">{{ strong_count }}</strong><span>Strong matches (50%+)</span></div>
+    <div class="stat reveal"><span class="stat-icon">📚</span><strong data-count="{{ top.missing|length }}">{{ top.missing|length }}</strong><span>Skills left for {{ top.short }}</span></div>
+</div>
+
+{# ---------- Radar + Learn next ---------- #}
+<div class="grid two align-start">
+    <section class="card reveal">
+        <h3>Career fit at a glance</h3>
+        <p class="muted small">Each corner is a career. The further the shape reaches, the better you fit.</p>
+        <svg id="radar" class="radar" data-radar='{{ radar|tojson }}' viewBox="0 0 520 360" role="img" aria-label="Radar chart of career match scores"></svg>
+    </section>
+
+    <div>
+        <section class="card reveal">
+            <h3>💡 Learn next</h3>
+            <p class="muted small">Missing skills from the careers you're closest to. If two tie, the one that helps more careers goes first.</p>
+            {% if next_up %}
+            <ul class="next-list">
+                {% for n in next_up %}
+                <li>
+                    <span class="next-rank">{{ loop.index }}</span>
+                    <div class="next-info">
+                        <strong>{{ n.skill }}</strong>
+                        <span class="small muted">Helps {{ n.careers|length }} career{{ 's' if n.careers|length != 1 }}: {{ n.careers[:2]|join(', ') }}{% if n.careers|length > 2 %} +{{ n.careers|length - 2 }} more{% endif %}</span>
+                    </div>
+                    <a class="btn small secondary" href="{{ learn_url(n.skill) }}" target="_blank" rel="noopener">Learn ↗</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">🎉 You've ticked every skill we track. Time to build projects!</p>
+            {% endif %}
+        </section>
+
+        <section class="card reveal">
+            <h3>Skill coverage</h3>
+            <p class="muted small">How much of each skill area you've covered.</p>
+            <div class="coverage">
+                {% for c in coverage %}
+                <div class="cov-row">
+                    <div class="cov-label"><span>{{ c.icon }} {{ c.name }}</span><span class="muted small">{{ c.have }}/{{ c.total }}</span></div>
+                    <div class="progress"><div style="width:{{ c.pct }}%"></div></div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+
+{# ---------- Top career cards ---------- #}
+<div class="section-title">
+    <h2>Recommended career paths</h2>
+    <a href="{{ url_for('careers') }}">View all {{ recommendations|length }} →</a>
+</div>
+<div class="grid two">
+    {% for career in recommendations[:4] %}
+    {{ career_card(career) }}
+    {% endfor %}
+</div>
+
+{# ---------- Skills ---------- #}
+<section class="card reveal">
+    <div class="card-top"><h2>Your skills</h2><a class="text-btn" href="{{ url_for('skills') }}">Edit</a></div>
+    <div class="chips">
+        {% for skill in skills %}<span class="chip have">✓ {{ skill }}</span>{% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

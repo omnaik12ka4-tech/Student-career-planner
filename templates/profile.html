@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="badge">Account</span>
+        <h1>My profile</h1>
+        <p class="muted">Keep your details up to date.</p>
+    </div>
+</div>
+
+<div class="profile-layout">
+    <section class="card profile-card">
+        <div class="avatar lg">{{ g.user['name'][:1]|upper }}</div>
+        <h2>{{ g.user['name'] }}</h2>
+        <p class="muted">{{ g.user['email'] }}</p>
+        <span class="badge">{{ g.user['course'] }} · {{ g.user['year'] }}</span>
+        <div class="profile-stats">
+            <div><strong>{{ skill_count }}</strong><span>Skills</span></div>
+            <div><strong>{{ top.score }}%</strong><span>Top match</span></div>
+        </div>
+        {% if skill_count %}<a class="text-btn" href="{{ url_for('career_detail', slug=top.slug) }}">{{ top.icon }} {{ top.name }} →</a>{% endif %}
+    </section>
+
+    <section class="form-card wide">
+        <h2>Edit details</h2>
+        <form method="POST">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <label for="name">Name</label>
+            <input id="name" name="name" maxlength="60" value="{{ g.user['name'] }}" required>
+            <label for="email">Email</label>
+            <input id="email" value="{{ g.user['email'] }}" disabled>
+            <label for="course">Course</label>
+            <input id="course" name="course" maxlength="60" value="{{ g.user['course'] }}">
+            <label for="year">Year</label>
+            <select id="year" name="year">
+                {% for y in ['FY', 'SY', 'TY'] %}
+                <option value="{{ y }}" {% if g.user['year'] == y %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn full" type="submit">Save profile</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

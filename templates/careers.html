@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import career_card %}
+{% block title %}Career Paths{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="badge">Career explorer</span>
+        <h1>Career recommendations</h1>
+        <p class="muted">Matches are calculated from the skills you selected. <span class="legend"><span class="chip have">✓ have</span> <span class="chip need">+ to learn</span></span></p>
+    </div>
+</div>
+
+<div class="toolbar">
+    <div class="search"><span aria-hidden="true">🔍</span><input id="careerSearch" type="search" placeholder="Search careers…" aria-label="Search careers"></div>
+    <div class="pills" id="careerFilters" role="group" aria-label="Filter by match">
+        <button type="button" class="pill-btn active" data-filter="all">All</button>
+        <button type="button" class="pill-btn" data-filter="strong">50%+ match</button>
+        <button type="button" class="pill-btn" data-filter="low">Under 50%</button>
+    </div>
+    <select id="careerSort" aria-label="Sort careers">
+        <option value="score">Sort: best match</option>
+        <option value="name">Sort: A → Z</option>
+    </select>
+</div>
+
+<div class="grid two" id="careerGrid">
+    {% for career in recommendations %}
+    {{ career_card(career, detailed=True) }}
+    {% endfor %}
+</div>
+<p class="muted center" id="careerEmpty" hidden>No careers match your search.</p>
+{% endblock %}
