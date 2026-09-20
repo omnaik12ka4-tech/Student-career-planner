@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Plan your career{% endblock %} · Smart Career Planner</title>
+    <meta name="description" content="Pick your skills, see your best career matches, find the gaps and follow a roadmap.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        /* Apply the saved theme before the page paints (prevents a white flash in dark mode) */
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.dataset.theme = t;
+                document.documentElement.classList.add('js');
+            } catch (e) { document.documentElement.classList.add('js'); }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+{# gradient used by every progress ring #}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#d946ef"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<header class="navbar">
+    <div class="nav-inner">
+        <a class="brand" href="{{ url_for('index') }}">
+            <span class="logo">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+            </span>
+            <span>Smart<b>Career</b></span>
+        </a>
+
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+            <span></span><span></span><span></span>
+        </button>
+
+        {% set ep = request.endpoint %}
+        <nav class="navlinks" id="navLinks">
+            {% if g.user %}
+            <a href="{{ url_for('dashboard') }}" class="{{ 'active' if ep == 'dashboard' }}">Dashboard</a>
+            <a href="{{ url_for('skills') }}" class="{{ 'active' if ep == 'skills' }}">My Skills</a>
+            <a href="{{ url_for('careers') }}" class="{{ 'active' if ep in ('careers', 'career_detail') }}">Careers</a>
+            <a href="{{ url_for('profile') }}" class="nav-profile {{ 'active' if ep == 'profile' }}">
+                <span class="avatar sm">{{ g.user['name'][:1]|upper }}</span> Profile
+            </a>
+            <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="{{ 'active' if ep == 'login' }}">Login</a>
+            <a class="btn small" href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+            <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span class="i-moon">🌙</span><span class="i-sun">☀️</span>
+            </button>
+        </nav>
+    </div>
+</header>
+
+<div class="toasts" id="toasts">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="toast {{ category }}" role="status">
+        <span class="toast-icon">{{ '✓' if category == 'success' else ('!' if category == 'error' else 'i') }}</span>
+        <span class="toast-msg">{{ message }}</span>
+        <button class="toast-x" type="button" aria-label="Dismiss">×</button>
+    </div>
+    {% endfor %}
+</div>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p><b>Smart Career Planner</b> · TY BSc CS mini project · Built with Flask &amp; SQLite</p>
+    <p class="small muted">Match % = matched skills ÷ required skills. It is a learning guide, not professional career advice.</p>
+</footer>
+</body>
+</html>
